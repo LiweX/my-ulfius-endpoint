@@ -1,14 +1,28 @@
 #include <stdio.h>
 #include <ulfius.h>
+#include <string.h>
 
-#define PORT 8080
+#define PORT 8537
 
-/**
- * Callback function for the web application on /helloworld url call
- */
-int callback_hello_world (const struct _u_request * request, struct _u_response * response, void * user_data) {
-  ulfius_set_string_body_response(response, 200, "Hello World!");
-  return U_CALLBACK_CONTINUE;
+int valor=0;
+
+int callback_increment (const struct _u_request * request, struct _u_response * response, void * user_data) {
+    request=request;
+    user_data=user_data;
+    valor++;
+    ulfius_set_string_body_response(response, 200, "incremented!");
+    return U_CALLBACK_CONTINUE;
+}
+
+int callback_imprimir (const struct _u_request * request, struct _u_response * response, void * user_data) {
+    request=request;
+    user_data=user_data;
+    int length = snprintf( NULL, 0, "%d", valor );
+    char* str = malloc( (size_t)(length + 1) );
+    snprintf( str, strlen(str), "%d", valor );
+    ulfius_set_string_body_response(response, 200, str);
+    free(str);
+    return U_CALLBACK_CONTINUE;
 }
 
 /**
@@ -24,7 +38,8 @@ int main(void) {
   }
 
   // Endpoint list declaration
-  ulfius_add_endpoint_by_val(&instance, "GET", "/helloworld", NULL, 0, &callback_hello_world, NULL);
+  ulfius_add_endpoint_by_val(&instance, "POST", "/increment", NULL, 0, &callback_increment, NULL);
+  ulfius_add_endpoint_by_val(&instance, "GET", "/imprimir", NULL, 0, &callback_imprimir, NULL);
 
   // Start the framework
   if (ulfius_start_framework(&instance) == U_OK) {
