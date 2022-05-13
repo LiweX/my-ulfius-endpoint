@@ -10,7 +10,7 @@ int callback_increment (const struct _u_request * request, struct _u_response * 
     request=request;
     user_data=user_data;
     valor++;
-    ulfius_set_string_body_response(response, 200, "incremented!");
+    ulfius_set_string_body_response(response, 200, "incremented!\n");
     return U_CALLBACK_CONTINUE;
 }
 
@@ -18,8 +18,9 @@ int callback_imprimir (const struct _u_request * request, struct _u_response * r
     request=request;
     user_data=user_data;
     int length = snprintf( NULL, 0, "%d", valor );
-    char* str = malloc( (size_t)(length + 1) );
-    snprintf( str, strlen(str), "%d", valor );
+    char* str = malloc( (size_t)(length + 2) );
+    sprintf(str, "%d", valor );
+    strcat(str,"\n");
     ulfius_set_string_body_response(response, 200, str);
     free(str);
     return U_CALLBACK_CONTINUE;
